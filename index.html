@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<style>canvas{display:inline;}</style>
+</head>
+<body><h1>Las 8 Reinas de la Muerte</h1>
+<h2>Blancas: <b id="puntaje_blancas">0</b></h2>
+<h2>Negras: <b id="puntaje_negras">0</b></h2>
+<canvas id="myCanvas"></canvas>
+
+</body>
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script type="text/javascript">
+
+		//juego para el parcial de Complegidad algoritmica, el algoritmo pone la siguiente reina en el sitio donde abarcaria la mayor cantidad de cuadrados 
+
+		var canvas = document.getElementById('myCanvas');
+		var ctx = canvas.getContext('2d');
+		canvas.height = 700;
+		canvas.width = 700;
+		var height = canvas.height;
+		var width = canvas.width;
+		var cuadricula = 8; // cuantos cuadraditos tiene la cuadricula // Usa un numero (no poner mas de 100 por que se vuelve lento) par porque si no se huevean los cuadrados del fondo (ver linea: 37) 
+		var size_sq = height/cuadricula;
+		var yolo = true;
+		var matriz = [];
+		var turno = true;
+		for(var i=0; i<cuadricula; i++) {
+		    matriz[i] = new Array(cuadricula);
+		}
+		$(document).ready(function(){ // cuando cargue imprime la cuadricula
+
+			ctx.fillStyle = 'green';
+			ctx.fillRect(0, 0, width, height);
+					for (var i = cuadricula- 1; i >= 0; i--) {
+						for (var j = cuadricula- 1; j >= 0; j--) {
+							if (yolo){ctx.fillStyle = 'white';yolo=false;}
+							else{ctx.fillStyle = 'red';yolo=true;}
+							ctx.fillRect(i*size_sq, j*size_sq, size_sq, size_sq);
+							matriz[j][i] = 0;
+						}
+						if (yolo) yolo = false; //quitar estas dos lineas si es impar tu cuadricula
+						else yolo = true;	
+					}
+		})
+
+		$(canvas).click(function(e){
+			var rect = canvas.getBoundingClientRect();
+		    var x = e.clientX - rect.left;
+		    var y = e.clientY - rect.top;
+		    x =  parseInt(x / size_sq);
+			y =  parseInt(y / size_sq);
+		    pinta_cuadrado(x, y)
+		   	AI();
+		    
+
+		})
+		function pinta_cuadrado(x, y){
+			if (  matriz[y][x] == 0){
+					posx = x * size_sq;
+					posy = y * size_sq;
+					base_image = new Image();
+					
+				if(turno){
+					matriz[y][x] = 2; //blancas //cambia en la matriz
+					ctx.fillStyle = "green"; //fondo_blancas
+					 base_image.src = 'crown_white.png'; // imagen_blanca
+					 turno = false;
+					 $("#puntaje_blancas").html(parseInt($("#puntaje_blancas").html())+10)
+				}
+				else{
+					matriz[y][x] = 3; //negras //cambia en la matriz
+					ctx.fillStyle = "yellow"; //fondo_negas
+					 base_image.src = 'crown.png'; //imagen_negras
+					 turno=true;
+					 $("#puntaje_negras").html(parseInt($("#puntaje_negras").html())+10)
+					}
+
+				ctx.fillRect(posx,posy, size_sq, size_sq); 
+				try	{
+					ctx.drawImage(base_image, posx, posy,size_sq, size_sq);
+				}
+				catch (err){
+					console.log("error")
+					 base_image.onload = function(){
+						 ctx.drawImage(base_image, posx, posy,size_sq, size_sq);
+					}
+				}
+				
+				
+				grey_out(posx, posy);
+			   }
+				  
+		}
+
+		
+	function grey_out(x, y){
+			//verticales y horizontal
+			x = parseInt(x / size_sq);
+			y = parseInt(y / size_sq);
+			for (var i = 0; i < cuadricula; i++){
+				if (matriz[i][x] == 0){matriz[i][x] = 5}
+				if (matriz[y][i] == 0){matriz[y][i] = 5}
+			}
+			//diagonales
+			for (var i = 0; i < cuadricula; i++) {
+				for (var j = 0; j < cuadricula; j++) {
+					if (x-y  == i-j || x+y == i+j )if (matriz[j][i] == 0)matriz[j][i] = 5
+				}
+		 	}
+			pintarMatriz();
+			
+		}
+	function pintarMatriz(){
+		for (var i = cuadricula- 1; i >= 0; i--) {
+			for (var j = cuadricula- 1; j >= 0; j--) {
+				if (matriz[j][i] ==5){
+					ctx.fillStyle = 'grey'
+					ctx.fillRect(i*size_sq, j*size_sq, size_sq, size_sq);
+				}
+			}
+		}
+		quedanMovimientos();
+	}
+	function AI(){
+		lista = new Array(64)
+		contador = 0
+		var mayor_x = 0; 
+		var mayor_y = 0;
+		var mayor = 0;
+
+		for (var i = 0; i < cuadricula; i++) {
+				for (var j = 0; j < cuadricula; j++) {
+					lista[contador] = contarCuadrados(i, j)
+					contador +=1;
+					var posx =  j*size_sq;
+					var posy =  i*size_sq;
+					ctx.font="20px Georgia";
+					ctx.fillStyle = 'green'
+					if (mayor < contarCuadrados(j, i) ){ mayor = contarCuadrados(j, i); mayor_y =j; mayor_x = i;}
+					//ctx.fillText(contarCuadrados(j, i),posx+50,posy+50);
+					//quitar el comentario de arriba para imprimir las posibildades (debugging)
+				}
+		 	}
+
+		 pinta_cuadrado(mayor_y, mayor_x)
+	}
+	function contarCuadrados(x, y){
+		var suma= 0;
+		//verticales y horizontal
+			for (var i = 0; i < cuadricula; i++){
+				if (matriz[i][x] == 0){suma +=1}
+				if (matriz[y][i] == 0){suma +=1}
+			}
+			//diagonales
+			for (var i = 0; i < cuadricula; i++) {
+				for (var j = 0; j < cuadricula; j++) {
+					if (x-y  == i-j || x+y == i+j )if (matriz[j][i] == 0)suma +=1
+				}
+		 	}
+			return suma;
+		}
+	function quedanMovimientos(){
+		for (var i = 0; i < cuadricula; i++) {
+			for (var j = 0; j < cuadricula; j++) {
+				if (matriz[i][j] == 0){
+					return true
+				}
+			}
+
+		}
+		
+		return false;
+
+	}
+</script>
+</html>
+
+
+
+
+
+
+
+
