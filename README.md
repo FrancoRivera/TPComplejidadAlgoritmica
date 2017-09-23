@@ -15,20 +15,22 @@ En 1848 el ajedrecista alemán Max Bezzel en 1848 propuso el juego de las 8 rein
 
 Una casa de software, especializada en juegos, conocedora de sus habilidades de programación le ha solicitado implementar una variante de este juego el cual  consiste en implementar una aplicación que permita a un jugador humano enfrentarse a una computadora, colocando cada quien una reina a la vez (de manera alternada). Por lo tanto, si el humano es quien inicia el juego la computadora coloca la segunda, la tercera el humano la cuarta la computadora y así sucesivamente.
 
+### Restricciones:
 
-2. La solución debe implementarse tomando en cuenta las siguientes restricciones:
- * Utilizar las técnicas de programación y algoritmos trabajados en clase.
- *	Utilizar como  prototipos el juego publicados en el aula virtual (Unidad 2).
- *	A su turno y en una jugada correcta, el jugador gana 10 puntos. Teóricamente si todas las jugadas y posiciones son correctas cada jugador debe tener  un máximo de 40 puntos declarándose un empate. 
- *	Si en su turno el jugador coloca a la reina en una posición incorrecta, pierde 5 puntos.
- *	El juego termina cuando:
- 	* Alguno de los jugadores comete tres errores consecutivos en su jugada.
-	* Alguno de los jugadores ha alcanzado el puntaje más alto y ya no es posible hacer otra jugada (movimiento) correcto.
-	* Si ambos jugadores no pudieron realizar jugada en tres turnos consecutivos. En este caso se declara empate o ganador según la cantidad de puntos acumulado.
+| Restriccion | Estado |
+|-------------|--------|
+|Utilizar las técnicas de programación y algoritmos trabajados en clase.| Pendiente  ![Pendiente][i_Pendiente] |
+|Utilizar como  prototipos el juego publicados en el aula virtual (Unidad 2).| Pendiente  ![Pendiente][i_Pendiente] |
+|A su turno y en una jugada correcta, el jugador gana 10 puntos. Teóricamente si todas las jugadas y posiciones son correctas cada jugador debe tener  un máximo de 40 puntos declarándose un empate.| Pendiente  ![Pendiente][i_Pendiente] |
+|Si en su turno el jugador coloca a la reina en una posición incorrecta, pierde 5 puntos.| Pendiente  ![Pendiente][i_Pendiente] |
+|El juego termina cuando alguno de los jugadores comete tres errores consecutivos en su jugada. | Pendiente  ![Pendiente][i_Pendiente] |
+|El juego termina cuando alguno de los jugadores ha alcanzado el puntaje más alto y ya no es posible hacer otra jugada (movimiento) correcto. | Pendiente  ![Pendiente][i_Pendiente] |
+|El juego termina cuando Si ambos jugadores no pudieron realizar jugada en tres turnos consecutivos. En este caso se declara empate o ganador según la cantidad de puntos acumulado. | Pendiente  ![Pendiente][i_Pendiente] |
+| Cada Jugador en su turno puede deshacer la jugada anterior de su contrincante a fin de asegurar su siguiente movimiento. | Pendiente  ![Pendiente][i_Pendiente] |
+| Cada Jugador en su turno solo se permite deshacer una sola jugada por turno.| Pendiente  ![Pendiente][i_Pendiente] |
+| Tiene un máximo de 30 segundos para hacer una jugada. Agotado el tiempo el turno pasa al contrincante.| Pendiente  ![Pendiente][i_Pendiente] |
 
-* Cada Jugador a su turno:
-	*	Puede deshacer la jugada anterior de su contrincante a fin de asegurar su siguiente movimiento. Solo se permite deshacer una sola jugada por turno.
-	*	Tiene un máximo de 30 segundos para hacer una jugada. Agotado el tiempo el turno pasa al contrincante.
+
 
 ## Rubrica
 | Criterio | Puntaje | Sobresaliente | Estado |
