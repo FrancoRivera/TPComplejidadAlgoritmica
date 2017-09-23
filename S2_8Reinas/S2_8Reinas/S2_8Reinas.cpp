@@ -24,15 +24,15 @@ void imprimeTablero(int* tab)
 {
 	printf("-");
 	for (int i=0;i<MAX;i++) 
-		printf("----");
+		printf("--");
 	printf("\n");
 	for (int i=0;i<MAX;i++)
 	{
-		printf("  |");
+		printf("|");
 		for (int j=0;j<tab[i];j++)		
-			printf(" |  ");		
+			printf(" |");		
 		if (tab[i]!=-1)
-		    printf("X  |");
+		    printf("X|");
 		for (int j=tab[i]+1;j<MAX;j++)
 			printf(" |");
 		printf("\n");
@@ -97,8 +97,8 @@ int main()
 	int tab[MAX];
 	for (int i=0;i<MAX;i++)
 		tab[i]=-1;
-	OchoReinas(tab,0);    
-	//soloUnaSolOchoReinas(tab,0);
+	//OchoReinas(tab,0);    
+	soloUnaSolOchoReinas(tab,0);
 	imprimeTablero(tab);
 	getch();
     return 0;
