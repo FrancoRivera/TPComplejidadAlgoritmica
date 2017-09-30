@@ -37,6 +37,12 @@ class game {
         this.UNDO = document.getElementById('deshacer')
         this.LAST_PLAY = []
         this.MY_PLAYS = []
+        this.TIMER = false;
+        this.RELOAD = false;
+        this.GREY = document.getElementById('grey_out')
+        this.WITH_HELP = false;
+        this.TIMER_ID = ""
+
     }
     toggleBoolean(boolean) {
         return !boolean;
@@ -204,13 +210,35 @@ class game {
         }
         return false;
     }
+   printMessage(message){
+        this.CTX.font ="80px sans-serif"
+        if (message="Empataste")this.CTX.font ="60px sans-serif"
+        this.CTX.fillStyle = "white"
+        this.CTX.fillRect(0, 20, 400,100)
+        this.CTX.fillStyle = "blue"
+        this.CTX.fillText(message, 70,100)
+        clearInterval(this.TIMER_ID)
+        this.RELOAD = true;
+    }
 
 
     result() {
 
-        if (this.quedanMovimientos()==false && this.AISCORE < this.mySCORE) { alert("Ganaste"); location.reload();}
-        if (this.quedanMovimientos()==false && this.AISCORE == this.mySCORE) { alert("Empate");location.reload();}
-        if ((this.quedanMovimientos()==false && this.AISCORE > this.mySCORE) || this.FAILS >=3  ){alert("Perdiste");location.reload();}
+        if (this.quedanMovimientos()==false && this.AISCORE < this.mySCORE) {this.printMessage("Ganaste"); }
+        if (this.quedanMovimientos()==false && this.AISCORE == this.mySCORE) { this.printMessage("Empataste");}
+        if ((this.quedanMovimientos()==false && this.AISCORE > this.mySCORE) || this.FAILS >=3  ){this.printMessage("Perdiste");}
+    }
+ 
+    mostrarGreys(){
+        for (var i = 0; i < this.SQUARES; i++) {
+            for (var j = 0; j < this.SQUARES; j++) {
+                if (this.MATRIZ[j][i]==5){
+                    this.CTX.drawSquare
+                     this.CTX.fillStyle = "grey"; //fondo_negas
+                     this.CTX.fillRect(i*this.SIZE_SQUARE, j*this.SIZE_SQUARE, this.SIZE_SQUARE, this.SIZE_SQUARE);
+                }
+            }
+        }
     }
     
 
@@ -224,16 +252,39 @@ $(document).ready(function() {
 $(document.getElementById('myCanvas')).click(function(e) {
     $(juego.UNDO).removeAttr("disabled")
     juego.runGame(e);
-    juego.result();
-    window.setInterval(function()   {
+
+    if(!juego.TIMER){
+         juego.TIMER_ID = window.setInterval(function()   {
             juego.TIME.innerHTML = parseFloat(juego.TIME.innerHTML)+1;
             }, 1000)
+         juego.TIMER = true;
+    }   
 
+    if (juego.WITH_HELP)
+    juego.mostrarGreys()
+    juego.result();
+   if (juego.RELOAD){
+    juego.RELOAD=false;
+    $("#reiniciar").show()
+    
+   }
+
+    
 })
+
 $(juego.UNDO).click(function(){
     juego.isMyTurn = true;
 })
 
+$(juego.GREY).click(function(){
+    juego.mostrarGreys()
+    juego.WITH_HELP = true;
+    $(juego.GREY).attr("disabled", "disabled")
+})
+
+$("#reiniciar").click(function(){
+    location.reload();
+})
 
 
 
