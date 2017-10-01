@@ -28,7 +28,7 @@ Una casa de software, especializada en juegos, conocedora de sus habilidades de 
 |El juego termina cuando Si ambos jugadores no pudieron realizar jugada en tres turnos consecutivos. En este caso se declara empate o ganador según la cantidad de puntos acumulado. |Listo  ![Listo][i_Listo] |
 | Cada Jugador en su turno puede deshacer la jugada anterior de su contrincante a fin de asegurar su siguiente movimiento. |Listo  ![Listo][i_Listo] |
 | Cada Jugador en su turno solo se permite deshacer una sola jugada por turno.| Listo  ![Listo][i_Listo] |
-| Tiene un máximo de 30 segundos para hacer una jugada. Agotado el tiempo el turno pasa al contrincante.| Pendiente  ![Pendiente][i_Pendiente] |
+| Tiene un máximo de 30 segundos para hacer una jugada. Agotado el tiempo el turno pasa al contrincante.| Listo  ![Listo][i_Listo] |
 
 
 

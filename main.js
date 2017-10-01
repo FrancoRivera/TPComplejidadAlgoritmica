@@ -17,7 +17,7 @@ const square = new Rectangle(10, 10);
 
 function chequearMovimientos(matrix, x, y){
     for (var i = 0; i < matrix.length; i++) {
-        if (matrix[x][i] == 1 || matrix[i][y]) //chequea las columnas
+        if (matrix[x][i] == 1 || matrix[i][y] ) //chequea las columnas
             return false;
     }
     return true;
@@ -31,31 +31,22 @@ class Jugada{
     buscar(){
         //DFS retorna un arbol de soluciones
         this.lista = []
-        if (!chequearMovimientos(this.matriz, this.x, this.y)){
-            return
-        }
+
         this.matriz[this.x][this.y] = 1
-        if (this.x+1<this.matriz.length){
-            if (this.y+1 < this.matriz.length){
-            
-             this.lista.push(new Jugada(this.matriz, this.x+1,this.y+1).buscar())
-             this.matriz[this.x+1][this.y+1] = 0 //backtrack
-            }
-            if (this.y-1 > 0){
-                this.lista.push(new Jugada(this.matriz, this.x+1,this.y-1).buscar())
-                this.matriz[this.x+1][this.y-1] = 0 //backtrack
-            }
+        if (this.x+1<this.matriz.length && chequearMovimientos(this.matriz, this.x+1, this.y)){
+            this.lista.push(new Jugada(this.matriz, this.x+1,this.y).buscar())
         }
-        if (this.x-1 > 0){
-            if (this.y+1 < this.matriz.length){
-                this.lista.push(new Jugada(this.matriz, this.x-1,this.y+1).buscar())
-                this.matriz[this.x-1][this.y+1] = 0 //backtrack
-            }
-            if (this.y-1 > 0){
-                this.lista.push(new Jugada(this.matriz, this.x-1,this.y-1).buscar())
-                this.matriz[this.x-1][this.y-1] = 0 //backtrack
-            }
+        if (this.x-1 > 0 && chequearMovimientos(this.matriz, this.x-1, this.y)){
+            this.lista.push(new Jugada(this.matriz, this.x-1,this.y).buscar())
         }
+        if (this.y+1 < this.matriz.length && chequearMovimientos(this.matriz, this.x, this.y+1)){
+            this.lista.push(new Jugada(this.matriz, this.x,this.y+1).buscar())
+        }
+        if (this.y-1 > 0 && chequearMovimientos(this.matriz, this.x, this.y-1)){
+            this.lista.push(new Jugada(this.matriz, this.x,this.y-1).buscar())
+        }
+        
+        this.matriz[this.x][this.y]=0
         console.log(this.x + " , " + this.y)
         console.log(this.lista)
         if (this.lista == []) return this
@@ -92,6 +83,7 @@ class game {
         this.MouseX = 0
         this.MouseY = 0
         this.PRINTLOOPID = ""
+        this.UNDOING = false;
 
     }
     toggleBoolean(boolean) {
@@ -125,7 +117,7 @@ class game {
             }
             color_tablero = this.toggleBoolean(color_tablero); //quitar estas dos lineas si es impar tu SQUARES
         }
-    //var lol = new Jugada(this.MATRIZ, 0,0).buscar()
+    var backtrack = new Jugada(this.MATRIZ, 0,0).buscar()
     }
 
     greyOut(x,y) {
@@ -174,6 +166,7 @@ class game {
             //this.CTX.fillRect(posx, posy, this.SIZE_SQUARE, this.SIZE_SQUARE);
             this.CTX.drawImage(imprime, posx, posy, this.SIZE_SQUARE, this.SIZE_SQUARE);
             this.greyOut(posx, posy);
+            if (this.UNDOING) this.isMyTurn = false;
             return true;
         } else {
             return false
@@ -233,19 +226,23 @@ class game {
         var y = e.clientY - rect.top;
         x = parseInt(x / this.SIZE_SQUARE);
         y = parseInt(y / this.SIZE_SQUARE);
+        this.TIME.innerHTML = 0; //reinicia countdown
+        
         if(this.drawSquare(x, y)){
-            this.AI()
+            if(!this.UNDOING) this.AI()
+            else{
+                 this.UNDOING = false
+                 this.isMyTurn = true;
+                 this.REDRAW = true;
+            } 
+               
         }
         else{ // Bajarle puntuiacion si se equivoca
             this.mySCORE = this.mySCORE-5;
             this.FAILS = this.FAILS + 1;
             $("#puntaje_blancas").html(this.mySCORE)
         }
-        if (this.TIME.innerHTML == 30) {
-            this.isMyTurn = false;
-            this.TIME.innerHTML = 0;
-        }
-
+       
     }
 
     quedanMovimientos() {
@@ -303,8 +300,6 @@ class game {
       
     }
     result() {
-        console.log("MY: " + this.mySCORE)
-        console.log("Their: " + this.AISCORE )
         if (this.quedanMovimientos()==false && this.AISCORE < this.mySCORE) {this.printMessage("Ganaste"); }
         if (this.quedanMovimientos()==false && this.AISCORE == this.mySCORE) { this.printMessage("Empataste");}
         if ((this.quedanMovimientos()==false && this.AISCORE > this.mySCORE) || this.FAILS >=3  ){this.printMessage("Perdiste");}
@@ -328,10 +323,10 @@ class game {
             }
         }
         for(var i = 0; i < this.MY_PLAYS.length; i++){
-            this.greyOut(this.MY_PLAYS[i][0], this.MY_PLAYS[i][1])
+            this.greyOut(this.MY_PLAYS[i][0]*this.SIZE_SQUARE, this.MY_PLAYS[i][1]*this.SIZE_SQUARE)
         }
         for(var i = 0; i < this.THEIR_PLAYS.length; i++){
-            this.greyOut(this.THEIR_PLAYS[i][0], this.THEIR_PLAYS[i][1])
+            this.greyOut(this.THEIR_PLAYS[i][0]*this.SIZE_SQUARE, this.THEIR_PLAYS[i][1]*this.SIZE_SQUARE)
         }
 
     }
@@ -343,18 +338,17 @@ class game {
             
         }
     deshacer(){
-        this.isMyTurn = false;
+        
         if (this.THEIR_PLAYS.length> 0){
+            this.isMyTurn = false;
            var last = this.THEIR_PLAYS.pop()
             this.MATRIZ[last[1]][last[0]] = 0
             this.recalcularMatriz()
              this.REDRAW = true;
+             this.UNDOING=true
         }
-
-        
        
-
-    }
+        }
 
 }
     
@@ -381,6 +375,11 @@ $("#myCanvas").click(function(e) {
     if(!juego.TIMER){
          juego.TIMER_ID = window.setInterval(function()   {
             juego.TIME.innerHTML = parseFloat(juego.TIME.innerHTML)+1;
+             if (juego.TIME.innerHTML == 30) {
+            juego.isMyTurn = false;
+            juego.AI()
+            juego.TIME.innerHTML = 0;
+        }
             }, 1000)
          juego.TIMER = true;
     }   
