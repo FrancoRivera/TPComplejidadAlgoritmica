@@ -14,7 +14,6 @@ class Rectangle {
 }
 
 const square = new Rectangle(10, 10);
-console.log(square.area);
 
 function chequearMovimientos(matrix, x, y){
     for (var i = 0; i < matrix.length; i++) {
@@ -89,6 +88,10 @@ class game {
         this.GREY = document.getElementById('grey_out')
         this.WITH_HELP = false;
         this.TIMER_ID = ""
+        this.REDRAW = true
+        this.MouseX = 0
+        this.MouseY = 0
+        this.PRINTLOOPID = ""
 
     }
     toggleBoolean(boolean) {
@@ -122,7 +125,7 @@ class game {
             }
             color_tablero = this.toggleBoolean(color_tablero); //quitar estas dos lineas si es impar tu SQUARES
         }
-    var lol = new Jugada(this.MATRIZ, 0,0).buscar()
+    //var lol = new Jugada(this.MATRIZ, 0,0).buscar()
     }
 
     greyOut(x,y) {
@@ -257,17 +260,18 @@ class game {
     }
    printMessage(message){
         this.CTX.font ="80px sans-serif"
-        if (message="Empataste")this.CTX.font ="60px sans-serif"
+        if (message=="Empataste") this.CTX.font ="60px sans-serif"
         this.CTX.fillStyle = "white"
         this.CTX.fillRect(0, 20, 400,100)
         this.CTX.fillStyle = "blue"
         this.CTX.fillText(message, 70,100)
         clearInterval(this.TIMER_ID)
+        clearInterval(this.PRINTLOOPID)
         this.RELOAD = true;
     }
 
     printLoop(){
-        
+        if (this.REDRAW){
            var color_tablero = true;
             for (var i = this.SQUARES - 1; i >= 0; i--) {
                 for (var j = this.SQUARES - 1; j >= 0; j--) {
@@ -280,22 +284,32 @@ class game {
                          this.CTX.drawImage(this.ASSET_WHITE_PATH, posx, posy, this.SIZE_SQUARE, this.SIZE_SQUARE);
                     if (this.MATRIZ[j][i] == 3) //enemigo
                          this.CTX.drawImage(this.ASSET_BLACK_PATH, posx, posy, this.SIZE_SQUARE, this.SIZE_SQUARE);
-                    if (this.MATRIZ[j][i]==5){
+                    if (this.MATRIZ[j][i]==5 && this.WITH_HELP){
                      this.CTX.fillStyle = "grey"; //fondo_negas
                      this.CTX.fillRect(i*this.SIZE_SQUARE, j*this.SIZE_SQUARE, this.SIZE_SQUARE, this.SIZE_SQUARE);
                 }
                 }
                 color_tablero = this.toggleBoolean(color_tablero); //quitar estas dos lineas si es impar tu SQUARES
             }
+             if (this.isMyTurn){
+                this.CTX.drawImage(this.ASSET_WHITE_PATH,  this.MouseX, this.MouseY, this.SIZE_SQUARE, this.SIZE_SQUARE);
+            }  
+             else{
+                this.CTX.drawImage(this.ASSET_BLACK_PATH,  this.MouseX, this.MouseY, this.SIZE_SQUARE, this.SIZE_SQUARE);
+            }  
+            this.REDRAW = false
+        }
+
       
     }
     result() {
-
+        console.log("MY: " + this.mySCORE)
+        console.log("Their: " + this.AISCORE )
         if (this.quedanMovimientos()==false && this.AISCORE < this.mySCORE) {this.printMessage("Ganaste"); }
         if (this.quedanMovimientos()==false && this.AISCORE == this.mySCORE) { this.printMessage("Empataste");}
         if ((this.quedanMovimientos()==false && this.AISCORE > this.mySCORE) || this.FAILS >=3  ){this.printMessage("Perdiste");}
     }
- 
+    
     mostrarGreys(){
         for (var i = 0; i < this.SQUARES; i++) {
             for (var j = 0; j < this.SQUARES; j++) {
@@ -306,29 +320,58 @@ class game {
             }
         }
     }
-
-    followMouse(x, y){
-            x = x - $("#myCanvas").offset().left -20
-            y = y - $("#myCanvas").offset().top -20
-            this.CTX.fillStyle = "grey"; //fondo_negas
-            this.CTX.fillRect(x, y, this.SIZE_SQUARE, this.SIZE_SQUARE);
-
+    recalcularMatriz(){
+        for(var i = 0; i < this.SQUARES; i++){
+            for (var j =0; j <this.SQUARES; j++){
+                if (this.MATRIZ[j][i] == 5)
+                    this.MATRIZ[j][i] = 0
+            }
         }
+        for(var i = 0; i < this.MY_PLAYS.length; i++){
+            this.greyOut(this.MY_PLAYS[i][0], this.MY_PLAYS[i][1])
+        }
+        for(var i = 0; i < this.THEIR_PLAYS.length; i++){
+            this.greyOut(this.THEIR_PLAYS[i][0], this.THEIR_PLAYS[i][1])
+        }
+
     }
+    followMouse(x, y){
+        if (!this.RELOAD){
+            this.MouseX = x - $("#myCanvas").offset().left -20
+            this.MouseY = y - $("#myCanvas").offset().top -20
+        }
+            
+        }
+    deshacer(){
+        this.isMyTurn = false;
+        if (this.THEIR_PLAYS.length> 0){
+           var last = this.THEIR_PLAYS.pop()
+            this.MATRIZ[last[1]][last[0]] = 0
+            this.recalcularMatriz()
+             this.REDRAW = true;
+        }
+
+        
+       
+
+    }
+
+}
     
 
 var juego = new game(400,400,8);
  $("#myCanvas").mousemove(function(event){
     juego.CTX.restore()
     juego.CTX.save()
-     juego.followMouse(event.pageX, event.pageY)})
+    juego.REDRAW = true;
+    juego.followMouse(event.pageX, event.pageY)})
 
 
 $(document).ready(function() { 
     juego.loadGame();
-    window.setInterval(function()   {
+    juego.PRINTLOOPID = window.setInterval(function()   {
     juego.printLoop();
-    }, 100)
+    }, 30)
 })
 
 $("#myCanvas").click(function(e) {
@@ -350,12 +393,12 @@ $("#myCanvas").click(function(e) {
     $("#reiniciar").show()
     
    }
-   $("#console").html(+"<br /> "+ juego.MY_PLAYS + " ")
     
 })
 
 $(juego.UNDO).click(function(){
-    juego.isMyTurn = true;
+
+    juego.deshacer()
 })
 
 $(juego.GREY).click(function(){
