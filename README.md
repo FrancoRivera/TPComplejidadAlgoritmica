@@ -20,14 +20,14 @@ Una casa de software, especializada en juegos, conocedora de sus habilidades de 
 | Restriccion | Estado |
 |-------------|--------|
 |Utilizar las técnicas de programación y algoritmos trabajados en clase.| Pendiente  ![Pendiente][i_Pendiente] |
-|Utilizar como  prototipos el juego publicados en el aula virtual (Unidad 2).| Pendiente  ![Pendiente][i_Pendiente] |
+|Utilizar como  prototipos el juego publicados en el aula virtual (Unidad 2).| Listo  ![Listo][i_Listo] |
 |A su turno y en una jugada correcta, el jugador gana 10 puntos. Teóricamente si todas las jugadas y posiciones son correctas cada jugador debe tener  un máximo de 40 puntos declarándose un empate.| Pendiente  ![Pendiente][i_Pendiente] |
 |Si en su turno el jugador coloca a la reina en una posición incorrecta, pierde 5 puntos.| Pendiente  ![Pendiente][i_Pendiente] |
 |El juego termina cuando alguno de los jugadores comete tres errores consecutivos en su jugada. | Pendiente  ![Pendiente][i_Pendiente] |
 |El juego termina cuando alguno de los jugadores ha alcanzado el puntaje más alto y ya no es posible hacer otra jugada (movimiento) correcto. | Pendiente  ![Pendiente][i_Pendiente] |
-|El juego termina cuando Si ambos jugadores no pudieron realizar jugada en tres turnos consecutivos. En este caso se declara empate o ganador según la cantidad de puntos acumulado. | Pendiente  ![Pendiente][i_Pendiente] |
-| Cada Jugador en su turno puede deshacer la jugada anterior de su contrincante a fin de asegurar su siguiente movimiento. | Pendiente  ![Pendiente][i_Pendiente] |
-| Cada Jugador en su turno solo se permite deshacer una sola jugada por turno.| Pendiente  ![Pendiente][i_Pendiente] |
+|El juego termina cuando Si ambos jugadores no pudieron realizar jugada en tres turnos consecutivos. En este caso se declara empate o ganador según la cantidad de puntos acumulado. |Listo  ![Listo][i_Listo] |
+| Cada Jugador en su turno puede deshacer la jugada anterior de su contrincante a fin de asegurar su siguiente movimiento. |Listo  ![Listo][i_Listo] |
+| Cada Jugador en su turno solo se permite deshacer una sola jugada por turno.| Listo  ![Listo][i_Listo] |
 | Tiene un máximo de 30 segundos para hacer una jugada. Agotado el tiempo el turno pasa al contrincante.| Pendiente  ![Pendiente][i_Pendiente] |
 
 
@@ -35,11 +35,11 @@ Una casa de software, especializada en juegos, conocedora de sus habilidades de 
 ## Rubrica
 | Criterio | Puntaje | Sobresaliente | Estado |
 |-----|----|-----|--------|
-|**Tipos de datos abstractos**| *3ptos* |Utiliza tipos de datos abstractos que de manera preliminar ha identificado como parte de su solución| Pendiente  ![Pendiente][i_Pendiente] 
-|	**Prototipo del juegos**| *5ptos* | Implementa una versión preliminar básica de la aplicación final usando como base el proyecto  y mostrando los elementos principales de la aplicación| Pendiente  ![Pendiente][i_Pendiente] 
-|**Espacios de búsqueda**| *3ptos* | Implementa mecanismo de espacios de búsqueda identificados en su solución| Pendiente  ![Pendiente][i_Pendiente] 
-|**Búsqueda/Recorrido**|*5 ptos* |  Implementa algoritmos de búsqueda de manera eficiente| Pendiente  ![Pendiente][i_Pendiente] 
-|**Restricciones del Juego** | *7ptos* |  Implemente las restricciones de termino del Juego y de cada jugada| Pendiente  ![Pendiente][i_Pendiente] 
+|**Tipos de datos abstractos**| *3ptos* |Utiliza tipos de datos abstractos que de manera preliminar ha identificado como parte de su solución| Listo  ![Listo][i_Listo]|
+|	**Prototipo del juegos**| *5ptos* | Implementa una versión preliminar básica de la aplicación final usando como base el proyecto  y mostrando los elementos principales de la aplicación|Listo  ![Listo][i_Listo]|
+|**Espacios de búsqueda**| *3ptos* | Implementa mecanismo de espacios de búsqueda identificados en su solución| Pendiente  ![Pendiente][i_Pendiente] |
+|**Búsqueda/Recorrido**|*5 ptos* |  Implementa algoritmos de búsqueda de manera eficiente| Pendiente  ![Pendiente][i_Pendiente] |
+|**Restricciones del Juego** | *7ptos* |  Implemente las restricciones de termino del Juego y de cada jugada| Listo  ![Listo][i_Listo] |
 
  
  
