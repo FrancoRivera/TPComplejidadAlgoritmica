@@ -31,7 +31,13 @@ class Jugada{
     buscar(){
         //DFS retorna un arbol de soluciones
         this.lista = []
-
+        //comment out -statr
+        for (var i = x; i< this.matriz.length-x;i++){
+            for (var j = y; j< this.matriz.length-y;j++){
+                //backtrack
+            }
+        }
+        //coment out - till here
         this.matriz[this.x][this.y] = 1
         if (this.x+1<this.matriz.length && chequearMovimientos(this.matriz, this.x+1, this.y)){
             this.lista.push(new Jugada(this.matriz, this.x+1,this.y).buscar())
@@ -46,7 +52,7 @@ class Jugada{
             this.lista.push(new Jugada(this.matriz, this.x,this.y-1).buscar())
         }
         
-        this.matriz[this.x][this.y]=0
+        this.matriz[this.x][this.y]=0 //backgrack
         console.log(this.x + " , " + this.y)
         console.log(this.lista)
         if (this.lista == []) return this
