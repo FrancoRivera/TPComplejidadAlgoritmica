@@ -16,6 +16,53 @@ class Rectangle {
 const square = new Rectangle(10, 10);
 console.log(square.area);
 
+function chequearMovimientos(matrix, x, y){
+    for (var i = 0; i < matrix.length; i++) {
+        if (matrix[x][i] == 1 || matrix[i][y]) //chequea las columnas
+            return false;
+    }
+    return true;
+}
+class Jugada{
+    constructor(matriz, x, y){
+        this.x = x;
+        this.y = y;
+        this.matriz = matriz;
+    }
+    buscar(){
+        //DFS retorna un arbol de soluciones
+        this.lista = []
+        if (!chequearMovimientos(this.matriz, this.x, this.y)){
+            return
+        }
+        this.matriz[this.x][this.y] = 1
+        if (this.x+1<this.matriz.length){
+            if (this.y+1 < this.matriz.length){
+            
+             this.lista.push(new Jugada(this.matriz, this.x+1,this.y+1).buscar())
+             this.matriz[this.x+1][this.y+1] = 0 //backtrack
+            }
+            if (this.y-1 > 0){
+                this.lista.push(new Jugada(this.matriz, this.x+1,this.y-1).buscar())
+                this.matriz[this.x+1][this.y-1] = 0 //backtrack
+            }
+        }
+        if (this.x-1 > 0){
+            if (this.y+1 < this.matriz.length){
+                this.lista.push(new Jugada(this.matriz, this.x-1,this.y+1).buscar())
+                this.matriz[this.x-1][this.y+1] = 0 //backtrack
+            }
+            if (this.y-1 > 0){
+                this.lista.push(new Jugada(this.matriz, this.x-1,this.y-1).buscar())
+                this.matriz[this.x-1][this.y-1] = 0 //backtrack
+            }
+        }
+        console.log(this.x + " , " + this.y)
+        console.log(this.lista)
+        if (this.lista == []) return this
+        return this.lista
+    }
+}
 
 
 class game {
@@ -35,7 +82,7 @@ class game {
         this.FAILS = 0;
         this.TIME = document.getElementById('tiempo');
         this.UNDO = document.getElementById('deshacer')
-        this.LAST_PLAY = []
+        this.THEIR_PLAYS = []
         this.MY_PLAYS = []
         this.TIMER = false;
         this.RELOAD = false;
@@ -61,11 +108,11 @@ class game {
         for (var i = 0; i < this.SQUARES; i++) {
             this.MATRIZ[i] = new Array(this.SQUARES);
         }
-        var color_tablero = true;
         this.CANVAS.height = this.GAME_HEIGHT;
         this.CANVAS.width = this.GAME_WIDTH;
         this.CTX.fillStyle = 'green';
         this.CTX.fillRect(0, 0, this.GAME_WIDTH, this.GAME_HEIGHT);
+        var color_tablero = true;
         for (var i = this.SQUARES - 1; i >= 0; i--) {
             for (var j = this.SQUARES - 1; j >= 0; j--) {
                 color_tablero ? this.CTX.fillStyle = 'white' : this.CTX.fillStyle = 'red';
@@ -73,10 +120,9 @@ class game {
                 this.CTX.fillRect(i * this.SIZE_SQUARE, j * this.SIZE_SQUARE, this.SIZE_SQUARE, this.SIZE_SQUARE);
                 this.MATRIZ[j][i] = 0;
             }
-            if (color_tablero) color_tablero = false; //quitar estas dos lineas si es impar tu SQUARES
-            else color_tablero = true;
+            color_tablero = this.toggleBoolean(color_tablero); //quitar estas dos lineas si es impar tu SQUARES
         }
-
+    var lol = new Jugada(this.MATRIZ, 0,0).buscar()
     }
 
     greyOut(x,y) {
@@ -111,6 +157,7 @@ class game {
                 this.isMyTurn = false;
                 this.mySCORE = this.mySCORE + 10;
                 $("#puntaje_blancas").html(this.mySCORE)
+                  this.MY_PLAYS.push([x, y])
             } else {
                 this.MATRIZ[y][x] = 3; //negras //cambia en la matriz
                 this.CTX.fillStyle = "yellow"; //fondo_negas
@@ -119,8 +166,9 @@ class game {
                 this.CTX.drawImage(this.ASSET_BLACK_PATH, posx, posy, this.SIZE_SQUARE, this.SIZE_SQUARE);
                 this.AISCORE = this.AISCORE + 10;
                 $("#puntaje_negras").html(this.AISCORE)
+                this.THEIR_PLAYS.push([x, y])
             }
-            this.CTX.fillRect(posx, posy, this.SIZE_SQUARE, this.SIZE_SQUARE);
+            //this.CTX.fillRect(posx, posy, this.SIZE_SQUARE, this.SIZE_SQUARE);
             this.CTX.drawImage(imprime, posx, posy, this.SIZE_SQUARE, this.SIZE_SQUARE);
             this.greyOut(posx, posy);
             return true;
@@ -172,7 +220,6 @@ class game {
                 }
             }
         }
-        this.LAST_PLAY = [mayor_y, mayor_x]
         this.drawSquare(mayor_y, mayor_x)
     }
 
@@ -184,13 +231,11 @@ class game {
         x = parseInt(x / this.SIZE_SQUARE);
         y = parseInt(y / this.SIZE_SQUARE);
         if(this.drawSquare(x, y)){
-            this.MY_PLAYS.push([x,y])   
             this.AI()
         }
         else{ // Bajarle puntuiacion si se equivoca
             this.mySCORE = this.mySCORE-5;
             this.FAILS = this.FAILS + 1;
-            console.log(this.FAILS);
             $("#puntaje_blancas").html(this.mySCORE)
         }
         if (this.TIME.innerHTML == 30) {
@@ -221,7 +266,29 @@ class game {
         this.RELOAD = true;
     }
 
-
+    printLoop(){
+        
+           var color_tablero = true;
+            for (var i = this.SQUARES - 1; i >= 0; i--) {
+                for (var j = this.SQUARES - 1; j >= 0; j--) {
+                    color_tablero ? this.CTX.fillStyle = 'white' : this.CTX.fillStyle = 'red';
+                    color_tablero = this.toggleBoolean(color_tablero);
+                    var posx = i * this.SIZE_SQUARE
+                    var posy = j * this.SIZE_SQUARE
+                    this.CTX.fillRect(posx, posy, this.SIZE_SQUARE, this.SIZE_SQUARE);
+                    if (this.MATRIZ[j][i] == 2) // si soy yo
+                         this.CTX.drawImage(this.ASSET_WHITE_PATH, posx, posy, this.SIZE_SQUARE, this.SIZE_SQUARE);
+                    if (this.MATRIZ[j][i] == 3) //enemigo
+                         this.CTX.drawImage(this.ASSET_BLACK_PATH, posx, posy, this.SIZE_SQUARE, this.SIZE_SQUARE);
+                    if (this.MATRIZ[j][i]==5){
+                     this.CTX.fillStyle = "grey"; //fondo_negas
+                     this.CTX.fillRect(i*this.SIZE_SQUARE, j*this.SIZE_SQUARE, this.SIZE_SQUARE, this.SIZE_SQUARE);
+                }
+                }
+                color_tablero = this.toggleBoolean(color_tablero); //quitar estas dos lineas si es impar tu SQUARES
+            }
+      
+    }
     result() {
 
         if (this.quedanMovimientos()==false && this.AISCORE < this.mySCORE) {this.printMessage("Ganaste"); }
@@ -233,23 +300,38 @@ class game {
         for (var i = 0; i < this.SQUARES; i++) {
             for (var j = 0; j < this.SQUARES; j++) {
                 if (this.MATRIZ[j][i]==5){
-                    this.CTX.drawSquare
                      this.CTX.fillStyle = "grey"; //fondo_negas
                      this.CTX.fillRect(i*this.SIZE_SQUARE, j*this.SIZE_SQUARE, this.SIZE_SQUARE, this.SIZE_SQUARE);
                 }
             }
         }
     }
+
+    followMouse(x, y){
+            x = x - $("#myCanvas").offset().left -20
+            y = y - $("#myCanvas").offset().top -20
+            this.CTX.fillStyle = "grey"; //fondo_negas
+            this.CTX.fillRect(x, y, this.SIZE_SQUARE, this.SIZE_SQUARE);
+
+        }
+    }
     
 
-}
-
 var juego = new game(400,400,8);
+ $("#myCanvas").mousemove(function(event){
+    juego.CTX.restore()
+    juego.CTX.save()
+     juego.followMouse(event.pageX, event.pageY)})
+
+
 $(document).ready(function() { 
     juego.loadGame();
-
+    window.setInterval(function()   {
+    juego.printLoop();
+    }, 100)
 })
-$(document.getElementById('myCanvas')).click(function(e) {
+
+$("#myCanvas").click(function(e) {
     $(juego.UNDO).removeAttr("disabled")
     juego.runGame(e);
 
@@ -268,7 +350,7 @@ $(document.getElementById('myCanvas')).click(function(e) {
     $("#reiniciar").show()
     
    }
-
+   $("#console").html(+"<br /> "+ juego.MY_PLAYS + " ")
     
 })
 
